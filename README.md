@@ -4,7 +4,7 @@ Telegram bot that uses OpenAI's GPT-3 to generate responses to your messages wit
 
 ## Features
 
-- Answers to your messages with configurable personality.
+- Answers to your messages with [configurable](https://github.com/aitorllj93/the-artificial-agent/blob/main/config/config.example.yml) personality.
 - Adds notes to your [Digital Brain (Obsidian)](#obsidian).
 
 ## Roadmap
