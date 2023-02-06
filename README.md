@@ -2,6 +2,14 @@
 
 Telegram bot that uses OpenAI's GPT-3 to generate responses to your messages with personality and personal assistant capabilities.
 
+![telegram](https://raw.githubusercontent.com/aitorllj93/the-artificial-agent/main/telegram.png)
+
+In Obsidian:
+
+![obsidian](https://raw.githubusercontent.com/aitorllj93/the-artificial-agent/main/obsidian.png)
+
+
+
 ## Features
 
 - Answers to your messages with [configurable](https://github.com/aitorllj93/the-artificial-agent/blob/main/config/config.example.yml) personality.
