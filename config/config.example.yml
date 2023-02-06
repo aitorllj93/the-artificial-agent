@@ -8,6 +8,9 @@ providers:
     apiKey: YOUR_BOT_API_KEY
     # set this to your own chat id to avoid others using your bot
     # chatId: 1234567890
+  openai:
+    # generate an api key at https://platform.openai.com/account/api-keys and paste it here
+    apiKey: YOUR_OPENAI_API_KEY
     # you can override the default completion params
     # completionParams:
       # model: 'text-davinci-003',
@@ -16,9 +19,6 @@ providers:
       # top_p: 1,
       # frequency_penalty: 0,
       # presence_penalty: 0,
-  openai:
-    # generate an api key at https://platform.openai.com/account/api-keys and paste it here
-    apiKey: YOUR_OPENAI_API_KEY
   obsidian:
     vault: /path/to/your/vault
     # dailyNotes:
