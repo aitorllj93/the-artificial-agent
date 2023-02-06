@@ -1,0 +1,72 @@
+
+common:
+  # timezone: Europe/Madrid
+
+providers:
+  telegram:
+    # generate a bot token with https://t.me/BotFather and paste it here
+    apiKey: YOUR_BOT_API_KEY
+    # set this to your own chat id to avoid others using your bot
+    # chatId: 1234567890
+    # you can override the default completion params
+    # completionParams:
+      # model: 'text-davinci-003',
+      # temperature: 0.7,
+      # max_tokens: 256,
+      # top_p: 1,
+      # frequency_penalty: 0,
+      # presence_penalty: 0,
+  openai:
+    # generate an api key at https://platform.openai.com/account/api-keys and paste it here
+    apiKey: YOUR_OPENAI_API_KEY
+  obsidian:
+    vault: /path/to/your/vault
+    # dailyNotes:
+      # you can use any date format supported by date-fns
+      # format: 'yyyy-MM-dd'
+      # headings:
+        # this heading will be used as the section to add the notes
+        # assistant: Assistant
+        # this heading will be used as the section to track the scheduled tasks
+        # schedule: Schedule
+
+personalities:
+  - name: Alfred
+    prompt: You're Alfred Pennyworth, Bruce Wayne's loyal and tireless butler. You're now working for me. You help me with everything. Express yourself according to the character.
+
+schedules:
+  - command: Say Good Morning
+    rule:
+      hour: 7
+      minute: 0
+
+commands:
+  - name: Add Note
+    parameters:
+      - text
+    handler: AddNoteHandler
+    personality: Alfred
+    examples:
+      - in: 'Add a note saying "Hello World" to my daily notes'
+        out: '{ "text": "Hello World" }'
+
+  - name: Create Task
+    handler: NotFoundHandler
+    personality: Alfred
+
+  - name: Send Email
+    handler: NotFoundHandler
+    personality: Alfred
+
+  - name: Chat
+    handler: ChatHandler
+    personality: Alfred
+    asFallback: true
+
+# internal commands, do not expose them if you don't know what you're doing
+
+  - name: Say Good Morning
+    handler: GoodMorningHandler
+    personality: Alfred
+    internal: true
+

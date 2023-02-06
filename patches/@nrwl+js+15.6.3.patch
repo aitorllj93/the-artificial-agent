@@ -1,0 +1,17 @@
+diff --git a/node_modules/@nrwl/js/src/executors/node/node-with-require-overrides.js b/node_modules/@nrwl/js/src/executors/node/node-with-require-overrides.js
+index cb29c0b..f517068 100644
+--- a/node_modules/@nrwl/js/src/executors/node/node-with-require-overrides.js
++++ b/node_modules/@nrwl/js/src/executors/node/node-with-require-overrides.js
+@@ -1,4 +1,5 @@
+ const Module = require('module');
++const dynamicImport = new Function('specifier', 'return import(specifier)');
+ const originalLoader = Module._load;
+ const mappings = JSON.parse(process.env.NX_MAPPINGS);
+ const keys = Object.keys(mappings);
+@@ -16,5 +17,5 @@ Module._load = function (request, parent) {
+         return originalLoader.apply(this, arguments);
+     }
+ };
+-require(fileToRun);
++dynamicImport(fileToRun);
+ //# sourceMappingURL=node-with-require-overrides.js.map
