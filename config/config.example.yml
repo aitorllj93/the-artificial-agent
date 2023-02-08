@@ -40,33 +40,66 @@ schedules:
       hour: 7
       minute: 0
 
+interpreters:
+  - name: freeWriting
+    description: Everything you send as a message would be added to the active space/note. The assistant will answer you with a suggested completion to continue with the text.
+    runner: FreeWritingInterpreterRunner
+
+slashCommands:
+  - name: switch
+    parameters:
+      - interpreter
+      - space
+    handler: SwitchInterpreterSHandler
+
 commands:
   - name: Add Note
     parameters:
       - text
     handler: AddNoteHandler
-    personality: Alfred
     examples:
       - in: 'Add a note saying "Hello World" to my daily notes'
         out: '{ "text": "Hello World" }'
 
-  - name: Create Task
-    handler: NotFoundHandler
-    personality: Alfred
+  - name: Add Task
+    parameters:
+      - text
+    handler: AddTaskHandler
+    examples:
+      - in: 'Add a task saying "Buy milk" to my daily notes'
+        out: '{ "text": "Buy milk", "space": "daily" }'
+      - in: 'Add task Buy milk to my daily notes'
+        out: '{ "text": "Buy milk", "space": "daily" }'
+
+  - name: Complete Task
+    parameters:
+      - text
+    handler: CompleteTaskHandler
+    examples:
+      - in: 'I Completed task Buy milk'
+        out: '{ "text": "Buy milk" }'
+      - in: 'Complete task Buy milk'
+        out: '{ "text": "Buy milk" }'
+
+  - name: List Tasks
+    parameters:
+      - space
+      - completed
+    handler: ListTasksHandler
+    examples:
+      - in: 'List my pending tasks from my daily notes'
+        out: '{ "space": "daily", "completed": false }'
 
   - name: Send Email
     handler: NotFoundHandler
-    personality: Alfred
 
   - name: Chat
     handler: ChatHandler
-    personality: Alfred
     asFallback: true
 
 # internal commands, do not expose them if you don't know what you're doing
 
   - name: Say Good Morning
     handler: GoodMorningHandler
-    personality: Alfred
     internal: true
 

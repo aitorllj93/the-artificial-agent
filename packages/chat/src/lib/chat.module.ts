@@ -6,6 +6,8 @@ import { ChatPromptBuilder } from './commands/Chat/chat.prompt-builder';
 import { GoodMorningHandler } from './commands/GoodMorning/good-morning.handler';
 import { NotFoundHandler } from './commands/NotFound/not-found.handler';
 import NotifyPrompt from './commands/Notify/notify.prompt';
+import EnumeratePrompt from './commands/Enumerate/enumerate.prompt';
+import ErrorPrompt from './commands/Error/error.prompt';
 
 @Module({
   imports: [CoreModule],
@@ -33,4 +35,4 @@ import NotifyPrompt from './commands/Notify/notify.prompt';
 })
 export class ChatModule {}
 
-export { NotifyPrompt };
+export { NotifyPrompt, ErrorPrompt, EnumeratePrompt };

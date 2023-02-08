@@ -6,6 +6,7 @@ export interface CommandHandler<T = unknown> {
 
 export type Command = {
   name: string;
+  description?: string;
   handler: CommandHandler;
   personality?: string;
   examples?: [

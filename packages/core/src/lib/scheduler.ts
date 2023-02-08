@@ -6,7 +6,7 @@ import { TelegramBotAdapter } from './adapters/telegram-bot.adapter';
 import { OpenAIAdapter } from './adapters/openai.adapter';
 
 import { History } from './history';
-import { CommandRegistry } from './registry';
+import { CommandRegistry } from './commands/registry';
 
 @Injectable()
 export class Scheduler {

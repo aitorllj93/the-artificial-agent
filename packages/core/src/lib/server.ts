@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { Interpreter } from './interpreter/interpreter';
 import { History } from './history';
 import { TelegramBotAdapter } from './adapters/telegram-bot.adapter';
+import { InterpreterManager } from './interpreters/manager';
 
 @Injectable()
 export class BotServer {
@@ -10,7 +10,7 @@ export class BotServer {
 
   constructor(
     private botAdapter: TelegramBotAdapter,
-    private interpreter: Interpreter,
+    private readonly interpreterManager: InterpreterManager,
     private history: History
   ) {}
 
@@ -24,7 +24,9 @@ export class BotServer {
           time: msg.date,
         });
 
-        await this.interpreter.run(msg);
+        const { runner } = this.interpreterManager.getInterpreter();
+
+        await runner.run(msg);
       } catch (e) {
         console.error(e);
       }

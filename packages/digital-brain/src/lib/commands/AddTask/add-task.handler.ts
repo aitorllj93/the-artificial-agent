@@ -14,7 +14,7 @@ import { NotifyPrompt } from '@the-artificial-agent/chat';
 import { ObsidianAdapter } from '../../adapters/obsidian/obsidian.adapter';
 
 @Injectable()
-export class AddNoteHandler implements CommandHandler<AddNoteCommand> {
+export class AddTaskHandler implements CommandHandler<AddTaskCommand> {
   constructor(
     private readonly bot: TelegramBotAdapter,
     private readonly ai: OpenAIAdapter,
@@ -23,17 +23,17 @@ export class AddNoteHandler implements CommandHandler<AddNoteCommand> {
   ) {}
 
   async handle(
-    { text }: AddNoteCommand,
+    { text }: AddTaskCommand,
     msg: Message,
     { personality }: Command
   ) {
-    await this.brain.insertAssistantContent(text);
+    await this.brain.insertAssistantContent(`- [ ] ${text}`);
 
     const personalityPrompt =
       this.personalities.getPersonalityPrompt(personality);
 
     const prompt = NotifyPrompt({
-      text: `Note "${text}" added to daily notes`,
+      text: `Task "${text}" added to daily notes`,
       personality: personalityPrompt,
     });
 
@@ -43,6 +43,6 @@ export class AddNoteHandler implements CommandHandler<AddNoteCommand> {
   }
 }
 
-export type AddNoteCommand = {
+export type AddTaskCommand = {
   text: string;
 };

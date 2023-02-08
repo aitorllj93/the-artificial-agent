@@ -19,7 +19,8 @@
       "@the-artificial-agent/core": ["packages/core/src/index.ts"],
       "@the-artificial-agent/digital-brain": [
         "packages/digital-brain/src/index.ts"
-      ]
+      ],
+      "@the-artificial-agent/essentials": ["packages/essentials/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

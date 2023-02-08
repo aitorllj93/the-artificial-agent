@@ -1,16 +1,21 @@
-import { History } from '@the-artificial-agent/core';
+import { Injectable } from '@nestjs/common';
+
+import { History, PersonalityRegistry } from '@the-artificial-agent/core';
+
 import ChatMods from './chat.mods';
 import ChatContext from './chat.context';
 import ChatPrompt, { ChatProps } from './chat.prompt';
-import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class ChatPromptBuilder {
-  constructor(private readonly history: History) {}
+  constructor(
+    private readonly history: History,
+    private readonly personalityRegistry: PersonalityRegistry
+  ) {}
 
   build({ message, context, mods, personality }: ChatProps): string {
     return ChatPrompt({
-      personality,
+      personality: this.personalityRegistry.getPersonalityPrompt(personality),
       mods:
         mods ||
         ChatMods({

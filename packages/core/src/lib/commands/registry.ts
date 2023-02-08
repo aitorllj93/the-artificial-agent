@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Command, CommandHandler } from './handler';
+import { Command, CommandHandler } from './types';
 
 @Injectable()
 export class CommandRegistry {

@@ -79,3 +79,17 @@ export const insertIntoSection = async (
 
   await writeFile(notePath, noteContentArray.join('\n'));
 };
+
+export const replaceLine = async (
+  notePath: string,
+  line: number,
+  content: string
+) => {
+  const noteContent = await readFile(notePath, 'utf-8');
+
+  const noteContentArray = noteContent.split('\n');
+
+  noteContentArray.splice(line - 1, 1, content);
+
+  await writeFile(notePath, noteContentArray.join('\n'));
+};

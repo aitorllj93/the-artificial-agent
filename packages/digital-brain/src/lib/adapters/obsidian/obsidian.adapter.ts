@@ -5,7 +5,12 @@ import { resolve } from 'node:path';
 import { readFileSync } from 'node:fs';
 import { format } from 'date-fns';
 
-import { getHeadedSection, getNoteAST, insertIntoSection } from './ast';
+import {
+  getHeadedSection,
+  getNoteAST,
+  insertIntoSection,
+  replaceLine,
+} from './ast';
 
 @Injectable()
 export class ObsidianAdapter {
@@ -30,6 +35,23 @@ export class ObsidianAdapter {
   );
 
   constructor(private config: ConfigService) {}
+
+  async getDailyNoteMeta() {
+    const date = new Date();
+
+    const dailyNoteName = `${format(date, this.dailyNotesFormat)}.md`;
+
+    const dailyNotePath = resolve(
+      this.VAULT_DIR,
+      this.dailyNotesSettings.folder || '',
+      dailyNoteName
+    );
+
+    return {
+      dailyNoteName,
+      dailyNotePath,
+    };
+  }
 
   async getDailyNote() {
     const date = new Date();
@@ -82,6 +104,36 @@ export class ObsidianAdapter {
     return sectionContent;
   }
 
+  async getTasks(
+    {
+      completed = undefined,
+    }: {
+      completed?: boolean;
+    } = {
+      completed: undefined,
+    }
+  ): Promise<any> {
+    const dailyNote = await this.getDailyNote();
+
+    const { sectionContent, sectionHeading } = getHeadedSection(
+      this.dailyNoteAssistantSectionName,
+      dailyNote.ast
+    );
+
+    const list = sectionContent.find((item) => item.type === 'list');
+    const listItems = (list as any).children.filter(
+      (item) => item.type === 'listItem'
+    );
+    const paragraphs = listItems.map((item) => item.children[0]);
+    const tasks = paragraphs.map((item) => item.children[0]);
+
+    if (completed !== undefined) {
+      return tasks.filter((task) => task.value.startsWith('[x]') === completed);
+    }
+
+    return tasks;
+  }
+
   async insertAssistantContent(content: string) {
     const dailyNote = await this.getDailyNote();
 
@@ -90,5 +142,25 @@ export class ObsidianAdapter {
       this.dailyNoteAssistantSectionName,
       content
     );
+  }
+
+  async addFreeWriting(content: string) {
+    await this.insertAssistantContent(content);
+  }
+
+  async completeTask(task: {
+    value: string;
+    position: {
+      start: {
+        line: number;
+      };
+      end: {
+        line: number;
+      };
+    };
+  }) {
+    const content = task.value.replace('[ ]', '- [x]');
+    const dailyNote = await this.getDailyNoteMeta();
+    await replaceLine(dailyNote.dailyNotePath, task.position.end.line, content);
   }
 }

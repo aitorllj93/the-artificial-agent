@@ -9,12 +9,12 @@ import {
   TelegramBotAdapter,
 } from '@the-artificial-agent/core';
 
-import { NotifyPrompt } from '@the-artificial-agent/chat';
+import { EnumeratePrompt } from '@the-artificial-agent/chat';
 
 import { ObsidianAdapter } from '../../adapters/obsidian/obsidian.adapter';
 
 @Injectable()
-export class AddNoteHandler implements CommandHandler<AddNoteCommand> {
+export class ListTasksHandler implements CommandHandler<ListTasksCommand> {
   constructor(
     private readonly bot: TelegramBotAdapter,
     private readonly ai: OpenAIAdapter,
@@ -23,26 +23,29 @@ export class AddNoteHandler implements CommandHandler<AddNoteCommand> {
   ) {}
 
   async handle(
-    { text }: AddNoteCommand,
+    { completed, space }: ListTasksCommand,
     msg: Message,
     { personality }: Command
   ) {
-    await this.brain.insertAssistantContent(text);
+    const tasks = await this.brain.getTasks({
+      completed,
+    });
 
     const personalityPrompt =
       this.personalities.getPersonalityPrompt(personality);
 
-    const prompt = NotifyPrompt({
-      text: `Note "${text}" added to daily notes`,
+    const prompt = EnumeratePrompt({
+      text: tasks.map((task, index) => task.value).join('\n'),
       personality: personalityPrompt,
     });
 
-    const notification = await this.ai.generateTextFromPrompt(prompt);
+    const message = await this.ai.generateTextFromPrompt(prompt);
 
-    this.bot.sendTextMessage(notification);
+    this.bot.sendTextMessage(message);
   }
 }
 
-export type AddNoteCommand = {
-  text: string;
+export type ListTasksCommand = {
+  space: string;
+  completed: boolean;
 };

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import GetCommandMods from './get-command.mods';
 import GetCommandContext from './get-command.context';
 import GetCommandPrompt, { GetCommandProps } from './get-command.prompt';
-import { CommandRegistry } from '../../../registry';
+import { CommandRegistry } from '../../../../commands/registry';
 
 @Injectable()
 export class GetCommandPromptBuilder {
