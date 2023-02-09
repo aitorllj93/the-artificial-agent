@@ -12,9 +12,26 @@ from commands import getCommandNames
 from messages import getLastMessages, addMessage, Message
 from prompts import getChatPrompt
 
+from text_to_speech import get_speech
+
+
+def remove_prefix(text, prefix):
+    if text.strip().startswith(prefix):
+        return text[len(prefix):]
+    return text
+
 
 async def onMessage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    addMessage(Message(update.message.text, "user", update.message.date))
+
+    if (update.message.reply_to_message and update.message.text == '🔊'):
+        voiceMessage = await get_speech(update.message.reply_to_message.text)
+        await update.message.reply_voice(voiceMessage, reply_to_message_id=update.message.reply_to_message.message_id)
+        return
+
+    if (update.message.text.startswith('/')):
+        return
+
+    addMessage(Message(update.message.text, "author", update.message.date))
 
     personality = getPersonality()
 
@@ -35,18 +52,19 @@ async def onMessage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
     print('completed')
-    print(completion.choices[0].text)
+
+    text = remove_prefix(completion.choices[0].text, 'bot:').strip()
+
+    print(text)
 
     message = Message(
-        completion.choices[0].text or 'I don\'t know what to say', personality['name'], update.message.date)
-
-    if message.text.startswith(personality['name'] + ': '):
-        # remove the name and the colon
-        message.text = message.text[len(personality['name']) + 2:]
+        text or 'I don\'t know what to say', 'bot', update.message.date)
 
     addMessage(message)
 
     await update.message.reply_text(message.text)
+
+#    await update.get_bot().send_voice(update.message.chat_id, voiceMessage)
 
 
 connect(onMessage)

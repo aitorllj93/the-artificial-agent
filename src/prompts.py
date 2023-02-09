@@ -1,6 +1,13 @@
+
+from datetime import datetime
 from telegram import Update
 
+from config import config
 from messages.get_messages import getLastMessages
+
+
+def getHourAndMinute():
+    return datetime.now().strftime("%H:%M")
 
 
 def getChatPrompt(message, update: Update, personality):
@@ -10,10 +17,10 @@ def getChatPrompt(message, update: Update, personality):
         print(i)
         previousMessagesPrompt += f'{i.toPrompt()}\n'
 
-    return f"""{personality}
+    return f"""{personality} It's {getHourAndMinute()}. My name is {config['common']['user']['name']}, and I'm the author of the document.
 
 Previous Messages:
 {previousMessagesPrompt}
 
-Answer the following message: {message}
+Answer the following message from the author: {message}
   """

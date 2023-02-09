@@ -12,7 +12,7 @@ class Message:
         self.date = date
 
     def __str__(self):
-        return f'{self.date} | {self.author} | {self.text}'
+        return f'{self.date} | {self.author} | {self.text.strip()}'
 
     def fromString(self, string: str):
         self.date, self.author, self.text = string.split(' | ')
