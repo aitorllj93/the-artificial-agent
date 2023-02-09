@@ -1,16 +1,15 @@
-
 common:
   # timezone: Europe/Madrid
 
 providers:
   telegram:
     # generate a bot token with https://t.me/BotFather and paste it here
-    apiKey: YOUR_BOT_API_KEY
+    # apiKey: YOUR_BOT_API_KEY
     # set this to your own chat id to avoid others using your bot
     # chatId: 1234567890
   openai:
     # generate an api key at https://platform.openai.com/account/api-keys and paste it here
-    apiKey: YOUR_OPENAI_API_KEY
+    # apiKey: YOUR_OPENAI_API_KEY
     # you can override the default completion params
     # completionParams:
       # model: 'text-davinci-003',
@@ -102,4 +101,3 @@ commands:
   - name: Say Good Morning
     handler: GoodMorningHandler
     internal: true
-
