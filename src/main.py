@@ -1,4 +1,5 @@
 
+import asyncio
 import config
 
 from telegram import Update
@@ -6,11 +7,13 @@ from telegram.ext import ContextTypes
 import openai
 
 from bot import connect
+from notes.task import Task
 
 from personalities import getPersonalityPrompt, getPersonality
 from commands import getCommandNames
 from messages import getLastMessages, addMessage, Message
 from prompts import getChatPrompt
+from notes import get_today_daily_note, get_today_daily_note_content, get_note_section, get_note_section_end_line
 
 from text_to_speech import get_speech
 
@@ -21,8 +24,28 @@ def remove_prefix(text, prefix):
     return text
 
 
-async def onMessage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+async def main() -> None:
+    # await index.save_to_disk('index.json')
+    todayDailyNote = await get_today_daily_note()
+    scheduledTasks = todayDailyNote.list_tasks_from_section('Schedule')
 
+    for i, task in enumerate(scheduledTasks):
+        print(task)
+        if (i == 0):
+            print(task.childContent)
+
+    # print(
+    #     '\n'.join(
+    #         map(
+    #             lambda t: t.__str__(),
+    #             scheduledTasks
+    #         )
+    #     ))
+
+    await connect(onMessage)
+
+
+async def onMessage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if (update.message.reply_to_message and update.message.text == '🔊'):
         voiceMessage = await get_speech(update.message.reply_to_message.text)
         await update.message.reply_voice(voiceMessage, reply_to_message_id=update.message.reply_to_message.message_id)
@@ -66,8 +89,7 @@ async def onMessage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
 #    await update.get_bot().send_voice(update.message.chat_id, voiceMessage)
 
-
-connect(onMessage)
+asyncio.run(main())
 # from prompts import getChatPrompt
 # from gpt_index import GPTSimpleVectorIndex, ObsidianReader
 # import openai
