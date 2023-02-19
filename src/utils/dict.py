@@ -32,7 +32,7 @@ def set_value_into_dict(dic_obj, path: str, value):
     :param value: value
     :return:
     """
-    if not dic_obj or not path:
+    if (not dic_obj and dic_obj != {}) or not path:
         return
 
     keys = path.split('.')

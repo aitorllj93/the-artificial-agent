@@ -1,48 +1,25 @@
 
-import asyncio
-import config
-
-from telegram import Update
-from telegram.ext import ContextTypes
-import openai
-
-from bot import connect
-from notes.task import Task
-
-from personalities import getPersonalityPrompt, getPersonality
-from commands import getCommandNames
-from messages import getLastMessages, addMessage, Message
-from prompts import getChatPrompt
-from notes import get_today_daily_note, get_today_daily_note_content, get_note_section, get_note_section_end_line
-
+from messages import addMessage, Message
+from engine import get_active_interpreter_runner, register_slash_commands, register_commands, register_interpreters, register_personalities
 from text_to_speech import get_speech
+from bot import connect
+from config import get_value
+from telegram.ext import ContextTypes
+from telegram import Update
+import asyncio
+import logging
+logging.getLogger().setLevel(logging.DEBUG)
 
-from weather import get_observation
 
-
-def remove_prefix(text, prefix):
-    if text.strip().startswith(prefix):
-        return text[len(prefix):]
-    return text
+register_interpreters(get_value('interpreters', {}))
+register_slash_commands(get_value('slashCommands', {}))
+register_commands(get_value('commands', {}))
+register_personalities(get_value('personalities', {}))
 
 
 async def main() -> None:
-    # await index.save_to_disk('index.json')
-    # todayDailyNote = await get_today_daily_note()
-    # scheduledTasks = todayDailyNote.list_tasks_from_section('Schedule')
 
-    # for i, task in enumerate(scheduledTasks):
-    #     print(task)
-    #    if (i == 0):
-    #       print(task.childContent)
-
-    # print(
-    #     '\n'.join(
-    #         map(
-    #             lambda t: t.__str__(),
-    #             scheduledTasks
-    #         )
-    #     ))
+    runner = get_active_interpreter_runner()
 
     await connect(onMessage)
 
@@ -58,40 +35,31 @@ async def onMessage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 
     addMessage(Message(update.message.text, "author", update.message.date))
 
-    personality = getPersonality()
+    runner = get_active_interpreter_runner()
 
-    print(personality)
+    await runner(update, context)
 
-    prompt = getChatPrompt(update.message.text, update, personality['prompt'])
-
-    print(prompt)
-
-    completion = await openai.Completion.acreate(
-        engine="text-davinci-003",
-        prompt=prompt,
-        temperature=0.7,
-        max_tokens=256,
-        top_p=1,
-        frequency_penalty=0,
-        presence_penalty=0,
-    )
-
-    print('completed')
-
-    text = remove_prefix(completion.choices[0].text, 'bot:').strip()
-
-    print(text)
-
-    message = Message(
-        text or 'I don\'t know what to say', 'bot', update.message.date)
-
-    addMessage(message)
-
-    await update.message.reply_text(message.text)
-
-#    await update.get_bot().send_voice(update.message.chat_id, voiceMessage)
 
 asyncio.run(main())
+
+
+# await index.save_to_disk('index.json')
+# todayDailyNote = await get_today_daily_note()
+# scheduledTasks = todayDailyNote.list_tasks_from_section('Schedule')
+
+# for i, task in enumerate(scheduledTasks):
+#     print(task)
+#    if (i == 0):
+#       print(task.childContent)
+
+# print(
+#     '\n'.join(
+#         map(
+#             lambda t: t.__str__(),
+#             scheduledTasks
+#         )
+#     ))
+
 # from prompts import getChatPrompt
 # from gpt_index import GPTSimpleVectorIndex, ObsidianReader
 # import openai
