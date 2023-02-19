@@ -17,6 +17,8 @@ from notes import get_today_daily_note, get_today_daily_note_content, get_note_s
 
 from text_to_speech import get_speech
 
+from weather import get_observation
+
 
 def remove_prefix(text, prefix):
     if text.strip().startswith(prefix):
@@ -26,13 +28,13 @@ def remove_prefix(text, prefix):
 
 async def main() -> None:
     # await index.save_to_disk('index.json')
-    todayDailyNote = await get_today_daily_note()
-    scheduledTasks = todayDailyNote.list_tasks_from_section('Schedule')
+    # todayDailyNote = await get_today_daily_note()
+    # scheduledTasks = todayDailyNote.list_tasks_from_section('Schedule')
 
-    for i, task in enumerate(scheduledTasks):
-        print(task)
-        if (i == 0):
-            print(task.childContent)
+    # for i, task in enumerate(scheduledTasks):
+    #     print(task)
+    #    if (i == 0):
+    #       print(task.childContent)
 
     # print(
     #     '\n'.join(

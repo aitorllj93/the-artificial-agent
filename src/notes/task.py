@@ -1,7 +1,4 @@
 
-import re
-
-
 class Task:
 
     def __init__(self, text: str = '', completed: bool = False, scheduled: str = None, raw: str = None):

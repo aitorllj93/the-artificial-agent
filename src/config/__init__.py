@@ -1,2 +1,2 @@
 
-from config.get_config import *
+from config.get_config import config, get_value
