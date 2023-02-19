@@ -1,15 +1,17 @@
 common:
   # timezone: Europe/Madrid
+  user:
+    name: User
 
 providers:
   telegram:
     # generate a bot token with https://t.me/BotFather and paste it here
-    # apiKey: YOUR_BOT_API_KEY
+    apiKey: REPLACE_THIS_WITH_YOUR_BOT_API_KEY
     # set this to your own chat id to avoid others using your bot
     # chatId: 1234567890
   openai:
     # generate an api key at https://platform.openai.com/account/api-keys and paste it here
-    # apiKey: YOUR_OPENAI_API_KEY
+    apiKey: REPLACE_THIS_WITH_YOUR_OPENAI_API_KEY
     # you can override the default completion params
     # completionParams:
       # model: 'text-davinci-003',
@@ -18,8 +20,11 @@ providers:
       # top_p: 1,
       # frequency_penalty: 0,
       # presence_penalty: 0,
+  elevenlabs:
+    apiKey: REPLACE_THIS_WITH_YOUR_ELEVENLABS_API_KEY
+    voiceId: REPLACE_THIS_WITH_YOUR_ELEVENLABS_VOICE_ID
   obsidian:
-    vault: /path/to/your/vault
+    vault: REPLACE_THIS_WITH_THE_PATH_TO_YOUR_VAULT
     # dailyNotes:
       # you can use any date format supported by date-fns
       # format: 'yyyy-MM-dd'
@@ -42,20 +47,20 @@ schedules:
 interpreters:
   - name: freeWriting
     description: Everything you send as a message would be added to the active space/note. The assistant will answer you with a suggested completion to continue with the text.
-    runner: FreeWritingInterpreterRunner
+    runner: notes.interpreters.free_writing
 
 slashCommands:
   - name: switch
     parameters:
       - interpreter
       - space
-    handler: SwitchInterpreterSHandler
+    handler: core.commands.switch_interpreter
 
 commands:
   - name: Add Note
     parameters:
       - text
-    handler: AddNoteHandler
+    handler: notes.commands.add_note
     examples:
       - in: 'Add a note saying "Hello World" to my daily notes'
         out: '{ "text": "Hello World" }'
@@ -63,7 +68,7 @@ commands:
   - name: Add Task
     parameters:
       - text
-    handler: AddTaskHandler
+    handler: notes.commands.add_task
     examples:
       - in: 'Add a task saying "Buy milk" to my daily notes'
         out: '{ "text": "Buy milk", "space": "daily" }'
@@ -73,7 +78,7 @@ commands:
   - name: Complete Task
     parameters:
       - text
-    handler: CompleteTaskHandler
+    handler: notes.commands.complete_task
     examples:
       - in: 'I Completed task Buy milk'
         out: '{ "text": "Buy milk" }'
@@ -84,20 +89,20 @@ commands:
     parameters:
       - space
       - completed
-    handler: ListTasksHandler
+    handler: notes.commands.list_tasks
     examples:
       - in: 'List my pending tasks from my daily notes'
         out: '{ "space": "daily", "completed": false }'
 
   - name: Send Email
-    handler: NotFoundHandler
+    handler: email.commands.send_email
 
   - name: Chat
-    handler: ChatHandler
+    handler: chat.commands.chat
     asFallback: true
 
 # internal commands, do not expose them if you don't know what you're doing
 
   - name: Say Good Morning
-    handler: GoodMorningHandler
+    handler: chat.commands.good_morning
     internal: true

@@ -27,8 +27,9 @@ In Obsidian:
 
 ### Prerequisites
 
-- [Node.js v16.18](https://nodejs.org/en/download/)
-- [Yarn](https://yarnpkg.com/getting-started)
+- [Python v3.8](https://www.python.org/downloads/)
+
+** For Node.js version (unmaintained) check the [node branch](https://github.com/aitorllj93/the-artificial-agent/node) **
 
 ### Installing
 
@@ -40,7 +41,7 @@ In Obsidian:
 
 2. Install NPM packages
    ```sh
-   yarn install
+   pip install -r requirements.txt
    ```
 
 ### Configuration
