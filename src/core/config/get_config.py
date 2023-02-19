@@ -3,7 +3,7 @@ import os
 from yaml import safe_load
 from dotenv import load_dotenv
 
-from utils import get_value_from_dict, set_value_into_dict
+from core.utils import get_value_from_dict, set_value_into_dict
 
 load_dotenv()
 

@@ -3,7 +3,7 @@ from pyowm.utils import config
 from pyowm.utils import timestamps
 from pyowm.utils.config import get_default_config
 
-from config import get_value
+from core.config import get_value
 
 config_dict = get_default_config()
 config_dict['language'] = get_value('providers.openweathermap.language', 'en')

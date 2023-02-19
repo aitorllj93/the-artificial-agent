@@ -3,7 +3,7 @@ import openai
 from telegram import Update
 from telegram.ext import ContextTypes
 
-from messages import add_message, Message
+from core.messages import add_message, Message
 from chat.commands.chat.prompt import prompt
 
 

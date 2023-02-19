@@ -3,7 +3,7 @@
 from os.path import exists
 from os import mkdir
 
-from messages.message import Message
+from core.messages.message import Message
 
 _dataFolder = 'data'
 _dataPath = f'{_dataFolder}/messages.txt'

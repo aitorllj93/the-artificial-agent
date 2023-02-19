@@ -1,7 +1,6 @@
 
 from logging import getLogger
-from utils import set_value_into_dict, get_value_from_dict
-from config import get_value
+from core.utils import set_value_into_dict, get_value_from_dict
 
 logger = getLogger(__name__)
 

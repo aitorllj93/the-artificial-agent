@@ -1,9 +1,7 @@
 
-from telegram import Update
-from telegram.ext import ContextTypes
+from core.adapters.telegram import ContextTypes, Update
 
-from engine.personalities import get_default_personality_prompt
-from engine.commands import get_command_handler
+from core.registry import get_default_personality_prompt, get_command_handler
 
 
 async def run(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:

@@ -1,18 +1,15 @@
 
 from datetime import datetime
 from typing import List
-from config import config
-from pathlib import Path
-from utils import get_value_from_dict
+from core.config import get_value
 from notes.note import Note
 
-vaultFolder = get_value_from_dict(config, 'providers.obsidian.vault', None)
-dailyNotesFolder = get_value_from_dict(
-    config, 'providers.obsidian.dailyNotes.folder', 'Journal')
-dailyNotesFormat = get_value_from_dict(
-    config, 'providers.obsidian.dailyNotes.format', '%Y-%m-%d')
-bibliographyNotesFolder = get_value_from_dict(
-    config, 'providers.obsidian.bibliography.folder', 'Bibliography')
+vaultFolder = get_value('providers.obsidian.vault', None)
+dailyNotesFolder = get_value('providers.obsidian.dailyNotes.folder', 'Journal')
+dailyNotesFormat = get_value(
+    'providers.obsidian.dailyNotes.format', '%Y-%m-%d')
+bibliographyNotesFolder = get_value(
+    'providers.obsidian.bibliography.folder', 'Bibliography')
 
 
 async def get_notes_recursive(folder: str, notes: List[Note]) -> List[Note]:

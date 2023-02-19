@@ -2,8 +2,8 @@
 from datetime import datetime
 from telegram import Update
 
-from config import config
-from messages.get_messages import get_last_messages
+from core.config import config
+from core.messages import get_last_messages
 
 
 def get_hour_and_minute():

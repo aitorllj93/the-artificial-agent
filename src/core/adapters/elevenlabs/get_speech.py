@@ -1,12 +1,12 @@
 import httpx
 
-from config import config
+from core.config import get_value
 
-voiceId = config['providers']['elevenlabs']['voiceId']
+voiceId = get_value('providers.elevenlabs.voiceId')
 
 headers = {
     'accept': 'audio/mpeg',
-    'xi-api-key': config['providers']['elevenlabs']['apiKey'],
+    'xi-api-key': get_value('providers.elevenlabs.apiKey'),
     'Content-Type': 'application/json',
 }
 
