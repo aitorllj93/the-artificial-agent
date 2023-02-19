@@ -1,43 +1,24 @@
 
-from messages import addMessage, Message
-from engine import get_active_interpreter_runner, register_slash_commands, register_commands, register_interpreters, register_personalities
-from text_to_speech import get_speech
-from bot import connect
-from config import get_value
-from telegram.ext import ContextTypes
-from telegram import Update
 import asyncio
 import logging
-logging.getLogger().setLevel(logging.DEBUG)
+import config
+import engine
+import bot
 
+logger = logging.getLogger()
+level = logging.INFO
+logger.setLevel(level)
+for handler in logger.handlers:
+    handler.setLevel(level)
 
-register_interpreters(get_value('interpreters', {}))
-register_slash_commands(get_value('slashCommands', {}))
-register_commands(get_value('commands', {}))
-register_personalities(get_value('personalities', {}))
+engine.register_interpreters(config.get_value('interpreters', {}))
+engine.register_slash_commands(config.get_value('slashCommands', {}))
+engine.register_commands(config.get_value('commands', {}))
+engine.register_personalities(config.get_value('personalities', {}))
 
 
 async def main() -> None:
-
-    runner = get_active_interpreter_runner()
-
-    await connect(onMessage)
-
-
-async def onMessage(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    if (update.message.reply_to_message and update.message.text == '🔊'):
-        voiceMessage = await get_speech(update.message.reply_to_message.text)
-        await update.message.reply_voice(voiceMessage, reply_to_message_id=update.message.reply_to_message.message_id)
-        return
-
-    if (update.message.text.startswith('/')):
-        return
-
-    addMessage(Message(update.message.text, "author", update.message.date))
-
-    runner = get_active_interpreter_runner()
-
-    await runner(update, context)
+    await bot.connect(engine.run)
 
 
 asyncio.run(main())

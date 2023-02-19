@@ -3,7 +3,7 @@ from datetime import datetime
 from telegram import Update
 
 from config import config
-from messages.get_messages import getLastMessages
+from messages.get_messages import get_last_messages
 
 
 def getHourAndMinute():
@@ -13,7 +13,7 @@ def getHourAndMinute():
 def getChatPrompt(message, update: Update, personality):
     previousMessagesPrompt = ''
 
-    for i in getLastMessages(5):
+    for i in get_last_messages(5):
         print(i)
         previousMessagesPrompt += f'{i.toPrompt()}\n'
 

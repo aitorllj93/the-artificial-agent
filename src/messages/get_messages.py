@@ -25,11 +25,11 @@ with open(_dataPath, 'r') as f:
         messages.append(message)
 
 
-def getLastMessages(n: int):
+def get_last_messages(n: int):
     return messages[-n:]
 
 
-def addMessage(message: Message):
+def add_message(message: Message):
     messages.append(message)
     with open(_dataPath, 'a') as f:
         f.write(f'{message}\n')

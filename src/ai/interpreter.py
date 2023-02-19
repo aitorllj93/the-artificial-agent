@@ -5,7 +5,7 @@ from telegram.ext import ContextTypes
 
 from engine.personalities import get_default_personality_prompt
 from prompts import getChatPrompt
-from messages import addMessage, Message
+from messages import add_message, Message
 
 
 def remove_prefix(text, prefix):
@@ -45,6 +45,6 @@ async def run(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         text or 'I don\'t know what to say', 'bot', update.message.date
     )
 
-    addMessage(message)
+    add_message(message)
 
     await update.message.reply_text(message.text)
