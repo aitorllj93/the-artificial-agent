@@ -3,8 +3,11 @@ import openai
 from telegram import Update
 from telegram.ext import ContextTypes
 
+from core.config import get_value
 from core.messages import add_message, Message
 from chat.commands.chat.prompt import prompt
+
+openai.api_key = get_value('providers.openai.apiKey')
 
 
 def remove_prefix(text, prefix):
