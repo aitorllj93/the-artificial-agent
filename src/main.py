@@ -3,8 +3,7 @@ import asyncio
 import logging
 import core.config as config
 import core.registry as registry
-from core.messages import add_message, Message
-from core.adapters import telegram, elevenlabs
+from core.adapters import telegram
 
 logger = logging.getLogger()
 level = logging.INFO
@@ -12,29 +11,24 @@ logger.setLevel(level)
 for handler in logger.handlers:
     handler.setLevel(level)
 
-registry.register_interpreters(config.get_value('interpreters', {}))
-registry.register_slash_commands(config.get_value('slashCommands', {}))
-registry.register_commands(config.get_value('commands', {}))
-registry.register_personalities(config.get_value('personalities', {}))
+registry.register_interpreters(config.get_value('interpreters', []))
+registry.register_slash_commands(config.get_value('slashCommands', []))
+registry.register_commands(config.get_value('commands', []))
+registry.register_personalities(config.get_value('personalities', []))
 
 
 async def run(update: telegram.Update, context: telegram.ContextTypes.DEFAULT_TYPE) -> None:
-    if (update.message.reply_to_message and update.message.text == '🔊'):
-        voiceMessage = await elevenlabs.get_speech(update.message.reply_to_message.text)
-        await update.message.reply_voice(voiceMessage, reply_to_message_id=update.message.reply_to_message.message_id)
-        return
+    try:
+        runner = registry.get_active_interpreter_runner()
 
-    if (update.message.text.startswith('/')):
-        return
-
-    add_message(Message(update.message.text, "author", update.message.date))
-
-    runner = registry.get_active_interpreter_runner()
-
-    await runner(update, context)
+        await runner(update, context)
+    except Exception as e:
+        print(e)
+        logger.exception(e)
 
 
 async def main() -> None:
+    logger.info('Starting bot')
     await telegram.connect(run)
 
 

@@ -21,6 +21,10 @@ def get_value_from_dict(dic_obj, path: str, default):
             pre_obj = pre_obj[int(key)]
         else:
             return default
+
+    if pre_obj is None:
+        return default
+
     return pre_obj
 
 

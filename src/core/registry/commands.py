@@ -56,3 +56,7 @@ def get_fallback_command():
 
 def get_fallback_command_handler():
     return get_command_handler(fallback_command)
+
+
+def get_fallback_commmand_name():
+    return get_value_from_dict(get_fallback_command(), 'name', 'Chat')

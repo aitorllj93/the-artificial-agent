@@ -1,2 +1,2 @@
 
-from core.interpreters.ai.interpreter import run
+from core.interpreters.ai.run import run
