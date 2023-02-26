@@ -6,7 +6,9 @@ import core.config as config
 import core.registry as registry
 from core.adapters import telegram
 
-coloredlogs.install()
+coloredlogs.install(
+    fmt='%(asctime)s - %(name)s %(levelname)s %(message)s',
+)
 
 logging.basicConfig(
     level=logging.DEBUG,
