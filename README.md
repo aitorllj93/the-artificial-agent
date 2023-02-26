@@ -17,6 +17,7 @@ In Obsidian:
 
 ## Roadmap
 
+- LangChain & LlamaIndex integration.
 - Integrate with ChatGPT API once it is released.
 - Calendar meetings reminders.
 - Mail notifications.
@@ -29,7 +30,7 @@ In Obsidian:
 
 - [Python v3.8](https://www.python.org/downloads/)
 
-** For Node.js version (unmaintained) check the [node branch](https://github.com/aitorllj93/the-artificial-agent/node) **
+** For Node.js version (unmaintained) check the [nodejs branch](https://github.com/aitorllj93/the-artificial-agent/nodejs) **
 
 ### Installing
 

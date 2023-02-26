@@ -1,6 +1,6 @@
 
 from logging import getLogger
-from core.utils import set_value_into_dict, get_value_from_dict
+from core.utils import dict_utils
 from importlib import import_module
 
 logger = getLogger(__name__)
@@ -10,12 +10,12 @@ fallback_command: str = None
 
 
 def register_command(command: dict):
-    name: str = get_value_from_dict(command, 'name', 'default')
-    set_value_into_dict(commands, name, command)
+    name: str = dict_utils.get_value_from_dict(command, 'name', 'default')
+    dict_utils.set_value_into_dict(commands, name, command)
     logger.info(
         f'registered command: {name} with handler {command["handler"]}')
 
-    as_fallback = get_value_from_dict(command, 'asFallback', False)
+    as_fallback = dict_utils.get_value_from_dict(command, 'asFallback', False)
 
     if as_fallback:
         global fallback_command
@@ -30,6 +30,10 @@ def register_commands(commands: list):
 
 def get_command_names():
     return commands.keys()
+
+
+def get_public_command_names():
+    return list(filter(lambda name: not dict_utils.get_value_from_dict(get_command(name), 'internal', False), get_command_names()))
 
 
 def get_command(name: str):
@@ -59,4 +63,4 @@ def get_fallback_command_handler():
 
 
 def get_fallback_commmand_name():
-    return get_value_from_dict(get_fallback_command(), 'name', 'Chat')
+    return dict_utils.get_value_from_dict(get_fallback_command(), 'name', 'Chat')

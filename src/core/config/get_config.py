@@ -3,7 +3,7 @@ import os
 from yaml import safe_load
 from dotenv import load_dotenv
 
-from core.utils import get_value_from_dict, set_value_into_dict
+from core.utils import dict_utils
 
 load_dotenv()
 
@@ -19,26 +19,26 @@ def from_env(key, default=None):
 
 
 def get_value(path, default=None):
-    return get_value_from_dict(config, path, default)
+    return dict_utils.get_value_from_dict(config, path, default)
 
 
 with open("config/config.yml", mode="rt", encoding="utf-8") as file:
     config = safe_load(file)
 
-    set_value_into_dict(config, 'providers.openai.apiKey', from_env(
+    dict_utils.set_value_into_dict(config, 'providers.openai.apiKey', from_env(
         'OPENAI_API_KEY', get_value('providers.openai.apiKey')))
 
-    set_value_into_dict(config, 'providers.telegram.apiKey',
-                        from_env('TELEGRAM_BOT_API_KEY', get_value('providers.telegram.apiKey')))
+    dict_utils.set_value_into_dict(config, 'providers.telegram.apiKey',
+                                   from_env('TELEGRAM_BOT_API_KEY', get_value('providers.telegram.apiKey')))
 
-    set_value_into_dict(config, 'providers.obsidian.vault',
-                        from_env('OBSIDIAN_VAULT_PATH', get_value('providers.obsidian.vault')))
+    dict_utils.set_value_into_dict(config, 'providers.obsidian.vault',
+                                   from_env('OBSIDIAN_VAULT_PATH', get_value('providers.obsidian.vault')))
 
-    set_value_into_dict(config, 'providers.elevenlabs.apiKey',
-                        from_env('ELEVENLABS_API_KEY', get_value('providers.elevenlabs.apiKey')))
+    dict_utils.set_value_into_dict(config, 'providers.elevenlabs.apiKey',
+                                   from_env('ELEVENLABS_API_KEY', get_value('providers.elevenlabs.apiKey')))
 
-    set_value_into_dict(config, 'providers.openweathermap.apiKey',
-                        from_env('OPENWEATHERMAP_API_KEY', get_value('providers.openweathermap.apiKey')))
+    dict_utils.set_value_into_dict(config, 'providers.openweathermap.apiKey',
+                                   from_env('OPENWEATHERMAP_API_KEY', get_value('providers.openweathermap.apiKey')))
 
-    set_value_into_dict(config, 'providers.openweathermap.location',
-                        from_env('OPENWEATHERMAP_LOCATION', get_value('providers.openweathermap.location')))
+    dict_utils.set_value_into_dict(config, 'providers.openweathermap.location',
+                                   from_env('OPENWEATHERMAP_LOCATION', get_value('providers.openweathermap.location')))

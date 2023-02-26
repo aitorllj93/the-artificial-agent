@@ -1,6 +1,5 @@
 
-from core.adapters.openai import generate_text_from_prompt
-from core.adapters.telegram import Update
+from core.adapters import openai, telegram
 from chat.commands.enumerate import prompt
 
 from notes.get_notes import get_today_daily_note
@@ -8,8 +7,9 @@ from notes.get_notes import get_today_daily_note
 
 async def handle(
     params: dict,
-    update: Update,
     command: dict,
+    update: telegram.Update,
+    context: telegram.ContextTypes.DEFAULT_TYPE
 ):
     note = await get_today_daily_note()
 
@@ -26,6 +26,6 @@ async def handle(
         command['personality']
     )
 
-    message = await generate_text_from_prompt(prompt_text)
+    message = await openai.generate_text_from_prompt(prompt_text)
 
-    await update.message.reply_text(message)
+    await telegram.send_text_message(message, update, context)

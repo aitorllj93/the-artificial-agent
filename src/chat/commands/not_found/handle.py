@@ -1,10 +1,10 @@
-from core.adapters.telegram import Update, ContextTypes
+from core.adapters import telegram
 
 
 async def handle(
     params: dict,
-    update: Update,
     command: dict,
-    context: ContextTypes.DEFAULT_TYPE
+    update: telegram.Update,
+    context: telegram.ContextTypes.DEFAULT_TYPE
 ):
-    await update.message.reply_text('I don\'t know what to say')
+    await telegram.send_text_message(update, context, 'I don\'t know what to say')

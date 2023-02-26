@@ -1,6 +1,5 @@
 
-from core.adapters.telegram import Update
-from core.adapters.openai import generate_text_from_prompt
+from core.adapters import telegram, openai
 
 from chat.commands.notify.prompt import prompt as notify_prompt
 
@@ -11,8 +10,9 @@ from notes.commands.complete_task.prompt import prompt
 
 async def handle(
     params: dict,
-    update: Update,
     command: dict,
+    update: telegram.Update,
+    context: telegram.ContextTypes.DEFAULT_TYPE
 ):
     note = await get_today_daily_note()
 
@@ -20,7 +20,7 @@ async def handle(
 
     prompt_text = prompt(tasks, params['text'])
 
-    taskToComplete = await generate_text_from_prompt(prompt_text, {
+    taskToComplete = await openai.generate_text_from_prompt(prompt_text, {
         "temperature": 0.1
     })
 
@@ -29,11 +29,11 @@ async def handle(
     task = tasks[taskIndex]
 
     if (task is None):
-        await update.message.reply_text("Task not found")
+        await telegram.send_text_message(update, context, "Task not found")
         return
 
     if (task.completed):
-        await update.message.reply_text("Task already completed")
+        await telegram.send_text_message(update, context, "Task already completed")
         return
 
     note.complete_task(task)
@@ -43,6 +43,6 @@ async def handle(
         command['personality']
     )
 
-    notification = await generate_text_from_prompt(notify_prompt_text)
+    notification = await openai.generate_text_from_prompt(notify_prompt_text)
 
-    await update.message.reply_text(notification)
+    await telegram.send_text_message(update, context, notification)

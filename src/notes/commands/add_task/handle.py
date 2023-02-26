@@ -10,8 +10,8 @@ from notes.task import Task
 
 async def handle(
     params: dict,
-    update: Update,
     command: dict,
+    update: Update,
 ):
     note = await get_today_daily_note()
 

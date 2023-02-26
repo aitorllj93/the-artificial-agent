@@ -1,6 +1,5 @@
 
-from core.adapters.openai import generate_text_from_prompt
-from core.adapters.telegram import Update, ContextTypes
+from core.adapters import telegram, openai
 
 from core.messages import add_message, Message
 from chat.commands.chat.prompt import prompt
@@ -8,15 +7,15 @@ from chat.commands.chat.prompt import prompt
 
 async def handle(
     params: dict,
-    update: Update,
     command: dict,
-    context: ContextTypes.DEFAULT_TYPE
+    update: telegram.Update,
+    context: telegram.ContextTypes.DEFAULT_TYPE
 ):
     prompt_text = prompt(params['message'], update, command['personality'])
 
     print(prompt_text)
 
-    text = await generate_text_from_prompt(prompt_text)
+    text = await openai.generate_text_from_prompt(prompt_text)
 
     print('completed')
 
@@ -28,4 +27,4 @@ async def handle(
 
     add_message(message)
 
-    await update.message.reply_text(message.text)
+    await telegram.send_text_message(update, context, message.text)

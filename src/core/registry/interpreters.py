@@ -2,7 +2,7 @@
 from logging import getLogger
 from importlib import import_module
 
-from core.utils import set_value_into_dict, get_value_from_dict
+from core.utils.dict import set_value_into_dict, get_value_from_dict
 
 logger = getLogger(__name__)
 
