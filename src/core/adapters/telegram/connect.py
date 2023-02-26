@@ -1,10 +1,10 @@
 
 import asyncio
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 import pytz
 import logging
 from telegram import Update, Chat
-from telegram.ext import ApplicationBuilder, MessageHandler, ContextTypes, CommandHandler
+from telegram.ext import Application, ApplicationBuilder, MessageHandler, ContextTypes, CommandHandler
 
 from core.config import get_value
 from core.utils import dict_utils
@@ -14,7 +14,7 @@ chat_id = get_value('providers.telegram.chatId')
 
 logger = logging.getLogger(__name__)
 
-app: None or ApplicationBuilder = None
+app: None or Application = None
 schedules = []
 
 
@@ -44,7 +44,8 @@ def connect(on_message) -> None:
     for (commandName, when) in schedules:
         logger.info(
             f'Schedule job registered on running app: {commandName} at: {when}')
-        app.job_queue.run_once(get_handler(commandName), when)
+        # app.job_queue.run_once(get_handler(commandName), when)
+        app.job_queue.run_daily(get_handler(commandName), when)
 
     app.run_polling()
 
@@ -98,7 +99,7 @@ def register_schedule_job(schedule: dict) -> None:
     isBeforeNow = when < now
 
     if (isBeforeNow):
-        return
+        when = when + timedelta(days=1)
 
     if (app is None):
         schedules.append((commandName, when))
