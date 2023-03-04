@@ -26,7 +26,7 @@ async def handle(
     date = update.message.date if update is not None else datetime.now()
 
     message = Message(
-        text or 'I don\'t know what to say', 'bot', date
+        text or 'I don\'t know what to say', 'assistant', date
     )
 
     add_message(message)

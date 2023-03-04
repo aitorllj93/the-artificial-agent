@@ -20,3 +20,9 @@ class Message:
 
     def toPrompt(self):
         return f'{self.author}: {self.text}'
+
+    def toChatGPT(self):
+        return {
+            "role": self.author,
+            "content": self.text.replace('\n', '')
+        }

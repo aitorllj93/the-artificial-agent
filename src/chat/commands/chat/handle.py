@@ -15,14 +15,14 @@ async def handle(
 
     print(prompt_text)
 
-    text = await openai.generate_text_from_prompt(prompt_text)
+    text = await openai.generate_answer_from_chat(prompt_text, command['personality'])
 
     print('completed')
 
     print(text)
 
     message = Message(
-        text or 'I don\'t know what to say', 'bot', update.message.date
+        text or 'I don\'t know what to say', 'assistant', update.message.date
     )
 
     add_message(message)

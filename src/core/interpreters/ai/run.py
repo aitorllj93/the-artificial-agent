@@ -88,7 +88,7 @@ async def run(update: telegram.Update, context: telegram.ContextTypes.DEFAULT_TY
         return await _run_slash_command(update, context)
 
     add_message(Message(update.message.text,
-                        "author", update.message.date))
+                        "user", update.message.date))
 
     command_name = await _get_ai_command_name(update)
 

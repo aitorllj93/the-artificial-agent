@@ -17,10 +17,11 @@ def prompt(message, update: Update, personality):
         print(i)
         previousMessagesPrompt += f'{i.toPrompt()}\n'
 
-    return f"""{personality} It's {get_hour_and_minute()}. My name is {config['common']['user']['name']}, and I'm the author of the document.
+    # return f"""{personality} It's {get_hour_and_minute()}. My name is {config['common']['user']['name']}, and I'm the author of the document.
 
-Previous Messages:
-{previousMessagesPrompt}
+# # Previous Messages:
+# # {previousMessagesPrompt}
 
-Answer the following message from the author: {message}
-  """
+# # Answer the following message from the author: {message}
+#   """
+    return message
