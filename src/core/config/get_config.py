@@ -42,3 +42,6 @@ with open("config/config.yml", mode="rt", encoding="utf-8") as file:
 
     dict_utils.set_value_into_dict(config, 'providers.openweathermap.location',
                                    from_env('OPENWEATHERMAP_LOCATION', get_value('providers.openweathermap.location')))
+
+    dict_utils.set_value_into_dict(config, 'providers.news.apiKey',
+                                   from_env('NEWS_API_KEY', get_value('providers.news.apiKey')))

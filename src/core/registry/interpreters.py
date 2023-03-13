@@ -10,9 +10,13 @@ interpreters: dict = {
     'ai': {
         'name': 'ai',
         'runner': 'core.interpreters.ai'
-    }
+    },
+    'langchain': {
+        'name': 'langchain',
+        'runner': 'core.interpreters.langchain'
+    },
 }
-active_interpreter: str = 'ai'
+active_interpreter: str = 'langchain'
 
 
 def register_interpreters(interpreters: list):
