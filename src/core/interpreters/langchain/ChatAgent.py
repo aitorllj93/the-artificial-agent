@@ -17,7 +17,7 @@ from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.agents.conversational.base import ConversationalAgent
 from datetime import datetime
 
-from core.registry.personalities import get_personality
+from core.registry.personalities import get_personality, default_personality
 from core.config import get_value
 
 import langchain
@@ -127,8 +127,8 @@ class ChatAgent:
                 description="A portal to the internet. Use this when you need to get specific content from a site. Input should be a specific url, and the output will be all the text on that page."
             )
         ]
-        ai_prefix = "AI"
-        human_prefix = "Human"
+        ai_prefix = personality_name or default_personality
+        human_prefix = get_value('common.user.name', "Human")
 
         suffix = f"""
 The current date is {date}. Questions that refer to a specific date or time period will be interpreted relative to this date.
@@ -195,12 +195,27 @@ New input: {{input}}
         )
 
         self.express_chain = LLMChain(
-            llm=personality_llm, prompt=personality_prompt, verbose=True)
+            llm=personality_llm, prompt=personality_prompt, verbose=True, memory=memory)
 
     def run(self, input):
         try:
             result = self.agent_executor.run(input)
+            
+            pattern = r'\(([a-z]{2}-[A-Z]{2})\)'
+            # Search for the local pattern in the string
+            match = re.search(pattern, result)
+
+            language = 'en-US'  # defaut
+            if match:
+                # Get the language code
+                language = match.group(1)
+
+                # Remove the language code from the reply
+                result = re.sub(pattern, '', result)
+
             reply = self.express_chain.run(result)
+            
+            reply = reply.replace('"', '')
 
         except ValueError as inst:
             print("ValueError: \n\n")
@@ -213,22 +228,3 @@ New input: {{input}}
             reply = "I'm sorry, I'm having trouble understanding you. Please try again."
 
         return reply
-
-        # res = agent_executor.run(update.message.text)
-        """  reply = chat_agent.run(update.message.text)
-
-             print(reply)
-
-             pattern = r'\(([a-z]{2}-[A-Z]{2})\)'
-             # Search for the local pattern in the string
-             match = re.search(pattern, reply)
-
-             language = 'en-US'  # defaut
-             if match:
-                 # Get the language code
-                 language = match.group(1)
-
-                 # Remove the language code from the reply
-                 reply = re.sub(pattern, '', reply)
-
-             print("LANG: ", language) """
