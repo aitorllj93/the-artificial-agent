@@ -13,6 +13,16 @@ def remove_prefix(text, prefix):
         return text[len(prefix):]
     return text
 
+async def transcribe_audio(f):
+    transcript = openai.Audio.transcribe("whisper-1", f)
+    
+    return transcript.text
+
+async def translate_audio(f):
+    transcript = openai.Audio.translate("whisper-1", f)
+    
+    return transcript.text
+    
 
 async def generate_text_from_prompt(prompt: str, params: dict = {}):
     completion = await openai.Completion.acreate(

@@ -2,9 +2,12 @@
 import asyncio
 import logging
 import coloredlogs
+from pydub import AudioSegment
+from os import remove as remove_file
 import core.config as config
 import core.registry as registry
-from core.adapters import telegram
+from core.adapters import telegram, openai
+from core.context import ChatContext
 
 coloredlogs.install(
     fmt='%(asctime)s - %(name)s %(levelname)s %(message)s',
@@ -22,21 +25,34 @@ registry.register_commands(config.get_value('commands', []))
 registry.register_personalities(config.get_value('personalities', []))
 telegram.register_schedule_jobs(config.get_value('schedules', []))
 
+async def speech_to_text(update: telegram.Update, context: telegram.ContextTypes.DEFAULT_TYPE) -> ChatContext:
+    bot = telegram.get_app().bot
+    file = await bot.get_file(update.message.voice.file_id)
+    ogg_file_path = file.file_id + '.ogg'
+    mp3_file_path = file.file_id + '.mp3'
+    await file.download_to_drive(ogg_file_path)
+    AudioSegment.from_file(ogg_file_path).export(mp3_file_path, format='mp3')
+    text = await openai.translate_audio(open(mp3_file_path, 'rb'))
+    
+    remove_file(ogg_file_path)
+    remove_file(mp3_file_path)
+    
+    context = ChatContext(text=text, update=update, telegram=context)
+    return context
 
 async def run(update: telegram.Update, context: telegram.ContextTypes.DEFAULT_TYPE) -> None:
+    chat_context: ChatContext = None # type: ignore
+    if (update.message.voice):
+        chat_context = await speech_to_text(update, context)
+    else:
+        chat_context = ChatContext(text=update.message.text, update=update, telegram=context)
+        
     try:
         runner = registry.get_active_interpreter_runner()
 
-        await runner(update, context)
+        await runner(chat_context)
     except Exception as e:
         print(e)
         logger.exception(e)
 
-
-# async def main() -> None:
-#     logger.info('Starting bot')
-#     await telegram.connect(run)
-
-
-# asyncio.run(main())
 telegram.connect(run)

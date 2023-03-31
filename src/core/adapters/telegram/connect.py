@@ -3,9 +3,10 @@ import asyncio
 from datetime import datetime, time, timedelta
 import pytz
 import logging
-from telegram import Update, Chat
+from telegram import Update, Chat, Bot
 from telegram.ext import Application, ApplicationBuilder, MessageHandler, ContextTypes, CommandHandler
 
+from core.context import ChatContext
 from core.config import get_value
 from core.utils import dict_utils
 from core.registry import get_command_handler, get_command, get_default_personality_prompt
@@ -20,6 +21,9 @@ schedules = []
 
 def get_chat_id() -> None or int:
     return chat_id
+
+def get_app() -> None or Application:
+    return app
 
 
 def __on_message(cb) -> None:
@@ -57,19 +61,19 @@ def connect(on_message) -> None:
     #     await app.stop()
 
 
-async def send_text_message(update: Update or None, context: ContextTypes.DEFAULT_TYPE or None, text: str) -> None:
+async def send_text_message(context: ChatContext, text: str) -> None:
     chat_id = get_chat_id()
 
-    if (update is None and chat_id is None):
+    if (context.update is None and chat_id is None):
         logger.warning('No chat to send message to')
         return
 
-    if (update is not None):
-        await update.message.reply_text(text)
+    if (context.update is not None):
+        await context.update.message.reply_text(text)
         return
 
     if (chat_id is not None):
-        await context.bot.send_message(chat_id, text)
+        await context.context.bot.send_message(chat_id, text)
         return
 
 

@@ -2,6 +2,7 @@
 import json
 import logging
 
+from core.context import ChatContext
 from core.adapters import elevenlabs, telegram, openai
 from core.messages import Message, add_message
 
@@ -13,8 +14,8 @@ from core.commands.get_parameters import prompt as get_parameters_prompt
 logger = logging.getLogger(__name__)
 
 
-async def _run_slash_command(update: telegram.Update, context: telegram.ContextTypes.DEFAULT_TYPE) -> None:
-    words = map(lambda word: word.strip(), update.message.text.split(' '))
+async def _run_slash_command(context: ChatContext) -> None:
+    words = map(lambda word: word.strip(), context.text.split(' '))
     commandName = words[0][1:]
     params = words[1:]
 
@@ -29,11 +30,11 @@ async def _run_slash_command(update: telegram.Update, context: telegram.ContextT
     logger.info(
         f'Running slash command {commandName} with params {paramsDict}')
 
-    await handle(paramsDict, update, command, context)
+    await handle(paramsDict, command, context)
 
 
-async def _get_ai_command_name(update: telegram.Update) -> str:
-    prompt_text = get_command_prompt(update.message.text)
+async def _get_ai_command_name(context: ChatContext) -> str:
+    prompt_text = get_command_prompt(context.text)
     command_names = registry.get_public_command_names()
 
     logger.debug(f'Prompt text: {prompt_text}')
@@ -61,13 +62,13 @@ async def _get_ai_command_name(update: telegram.Update) -> str:
     return command_name
 
 
-async def get_ai_command_parameters(command: dict, update: telegram.Update) -> dict:
+async def get_ai_command_parameters(command: dict, context: ChatContext) -> dict:
     if command['name'] == registry.get_fallback_commmand_name():
         return {
-            "message": update.message.text
+            "message": context.text
         }
 
-    prompt_text = get_parameters_prompt(update.message.text, command)
+    prompt_text = get_parameters_prompt(context.text, command)
 
     logger.debug(f'Prompt text: {prompt_text}')
 
@@ -78,26 +79,26 @@ async def get_ai_command_parameters(command: dict, update: telegram.Update) -> d
     return json.loads(text)
 
 
-async def run(update: telegram.Update, context: telegram.ContextTypes.DEFAULT_TYPE) -> None:
-    if update.message.reply_to_message and update.message.text == '🔊':
-        voiceMessage = await elevenlabs.get_speech(update.message.reply_to_message.text)
-        await update.message.reply_voice(voiceMessage, reply_to_message_id=update.message.reply_to_message.message_id)
+async def run(context: ChatContext) -> None:
+    if context.update.message.reply_to_message and context.update.message.text == '🔊':
+        voiceMessage = await elevenlabs.get_speech(context.update.message.reply_to_message.text)
+        await context.update.message.reply_voice(voiceMessage, reply_to_message_id=context.update.message.reply_to_message.message_id)
         return
 
-    if update.message.text[0] == '/':
-        return await _run_slash_command(update, context)
+    if context.text[0] == '/':
+        return await _run_slash_command(context)
 
-    add_message(Message(update.message.text,
-                        "user", update.message.date))
+    add_message(Message(context.text,
+                        "user", context.update.message.date))
 
-    command_name = await _get_ai_command_name(update)
+    command_name = await _get_ai_command_name(context)
 
     command = registry.get_command(command_name)
-    parameters = await get_ai_command_parameters(command, update)
+    parameters = await get_ai_command_parameters(command, context)
     handle = registry.get_command_handler(command_name)
 
     command["personality"] = registry.get_default_personality_prompt()
 
     logger.info(f'Running command {command_name} with params {parameters}')
 
-    await handle(parameters, command, update, context)
+    await handle(parameters, command, context)

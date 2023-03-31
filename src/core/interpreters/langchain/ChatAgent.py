@@ -11,7 +11,7 @@ from langchain.chains import LLMChain, LLMRequestsChain
 from langchain import Wikipedia, OpenAI
 from langchain.chat_models import ChatOpenAI
 from langchain.agents.react.base import DocstoreExplorer
-from langchain.agents import Tool, AgentExecutor, load_tools, initialize_agent
+from langchain.agents import Tool, AgentExecutor, load_tools, initialize_agent, get_all_tool_names
 from langchain.prompts import PromptTemplate
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain.agents.conversational.base import ConversationalAgent
@@ -82,6 +82,7 @@ class ChatAgent:
         # giphy = GiphyAPIWrapper()
 
         # tool_names = get_all_tool_names()
+        print(get_all_tool_names())
         tool_names = [
             # 'serpapi',
             # 'wolfram-alpha',
