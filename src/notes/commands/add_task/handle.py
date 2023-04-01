@@ -1,5 +1,5 @@
 
-from core.adapters.telegram import Update
+from core.adapters.telegram_bot import Update
 from core.adapters.openai import generate_text_from_prompt
 
 from chat.commands.notify.prompt import prompt

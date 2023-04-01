@@ -1,6 +1,6 @@
 
 
-from core.adapters.telegram import ContextTypes, Update
+from core.adapters.telegram_bot import ContextTypes, Update
 from core.adapters.openai import generate_text_from_prompt
 
 from core.registry import get_slash_command_handler, get_slash_command

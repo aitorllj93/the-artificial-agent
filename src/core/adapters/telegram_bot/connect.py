@@ -1,10 +1,13 @@
 
 import asyncio
+import json
+from enum import Enum
+from typing import Callable
 from datetime import datetime, time, timedelta
 import pytz
 import logging
-from telegram import Update, Chat, Bot
-from telegram.ext import Application, ApplicationBuilder, MessageHandler, ContextTypes, CommandHandler
+from telegram import Update, Message, Chat, Bot, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.ext import Application, ApplicationBuilder, CallbackQueryHandler, MessageHandler, ContextTypes, CommandHandler
 
 from core.context import ChatContext
 from core.config import get_value
@@ -18,6 +21,10 @@ logger = logging.getLogger(__name__)
 app: None or Application = None
 schedules = []
 
+class Command(Enum):
+    PLAY_VOICE = '🔊'
+    RETRY = '🔁'
+
 
 def get_chat_id() -> None or int:
     return chat_id
@@ -26,9 +33,9 @@ def get_app() -> None or Application:
     return app
 
 
-def __on_message(cb) -> None:
+def __on_message(cb) -> Callable[[Update, ContextTypes.DEFAULT_TYPE], None]:
 
-    async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         global chat_id
         if (chat_id is not None and update.effective_chat.id != chat_id):
             update.message.reply_text(
@@ -39,6 +46,21 @@ def __on_message(cb) -> None:
 
     return handler
 
+def __on_callback_query(cb) -> None:
+    
+    processMessage = __on_message(cb)
+
+    async def handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+        """Parses the CallbackQuery and updates the message text."""
+        query = update.callback_query
+
+        # CallbackQueries need to be answered, even if no notification to the user is needed
+        # Some clients may have trouble otherwise. See https://core.telegram.org/bots/api#callbackquery
+        await query.answer()
+
+        await processMessage(update, context)
+        
+    return handler
 
 def connect(on_message) -> None:
     global app
@@ -50,9 +72,11 @@ def connect(on_message) -> None:
             f'Schedule job registered on running app: {commandName} at: {when}')
         # app.job_queue.run_once(get_handler(commandName), when)
         app.job_queue.run_daily(get_handler(commandName), when)
+                
+    app.add_handler(CallbackQueryHandler(__on_callback_query(on_message)))
+
 
     app.run_polling()
-
     # async with app:
     #     await app.start()
     #     await app.updater.start_polling()
@@ -61,20 +85,28 @@ def connect(on_message) -> None:
     #     await app.stop()
 
 
-async def send_text_message(context: ChatContext, text: str) -> None:
+async def send_text_message(context: ChatContext, text: str, reply_to_message: Message = None) -> None:
     chat_id = get_chat_id()
 
     if (context.update is None and chat_id is None):
         logger.warning('No chat to send message to')
         return
+    
+    keyboard = [
+        [InlineKeyboardButton('🔊', callback_data='🔊'), InlineKeyboardButton('🔁', callback_data='🔁')]
+    ]
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
     if (context.update is not None):
-        await context.update.message.reply_text(text)
-        return
+        if (reply_to_message is None):
+            reply_to_message = context.update.message
+            
+        response = await reply_to_message.reply_markdown(text, reply_markup=reply_markup)
+        return response
 
     if (chat_id is not None):
-        await context.context.bot.send_message(chat_id, text)
-        return
+        response = await context.context.bot.send_message(chat_id, text, reply_markup=reply_markup)
+        return response
 
 
 def register_schedule_job(schedule: dict) -> None:

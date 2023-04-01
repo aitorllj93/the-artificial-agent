@@ -53,3 +53,9 @@ def add_message_json(prompt: str, response: str):
     })
     with open(_jsonPath, 'w') as f:
         json.dump(messagesJSON, f)
+        
+def get_prompt_from_message(message: str) -> str:
+    for msg in messagesJSON:
+        if msg['response'] == message:
+            return msg['prompt']
+    return None

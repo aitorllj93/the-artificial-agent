@@ -1,6 +1,6 @@
 
 from datetime import datetime
-from core.adapters.telegram import Update
+from core.adapters.telegram_bot import Update
 
 from core.config import config
 from core.messages import get_last_messages
