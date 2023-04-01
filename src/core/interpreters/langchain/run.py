@@ -1,6 +1,5 @@
 
 from logging import getLogger
-from typing import Callable
 
 from core.interpreters.langchain.ChatAgent import ChatAgent
 from core.messages import add_message_json, get_last_messages_json, get_prompt_from_message
@@ -21,6 +20,7 @@ async def reply_with_voice(voiceMessage, reply_to_message: telegram.Message, ctx
     return 
 
 async def play_voice(context: ChatContext, reply_to_message: telegram.Message, text: str) -> None:
+    logger.info('Playing voice for: %s', text)
     speech = await get_speech_for_text(text)
     await reply_with_voice(speech, reply_to_message=reply_to_message, ctx=context)
     return
@@ -40,8 +40,6 @@ async def answer(context: ChatContext, reply_to_message: telegram.Message) -> No
     response = await telegram.send_text_message(context, reply, reply_to_message=reply_to_message)
     
     if (return_as_audio):
-        print(response)
-        logger.info('Playing voice for: %s', response.text)
         await play_voice(context, response, text=response.text)
         return
 
@@ -56,7 +54,6 @@ async def run(context: ChatContext) -> None:
         
     if (query_data == '🔊'):
         reply_to_message = context.update.callback_query.message
-        logger.info('Playing voice for: %s', reply_to_message.text)
         await play_voice(context, reply_to_message, text=reply_to_message.text)
         return
     

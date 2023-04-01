@@ -33,7 +33,8 @@ async def speech_to_text(update: telegram.Update, context: telegram.ContextTypes
     mp3_file_path = file.file_id + '.mp3'
     await file.download_to_drive(ogg_file_path)
     AudioSegment.from_file(ogg_file_path).export(mp3_file_path, format='mp3')
-    text = await openai.translate_audio(open(mp3_file_path, 'rb'))
+    # text = await openai.translate_audio(open(mp3_file_path, 'rb'))
+    text = await openai.transcribe_audio(open(mp3_file_path, 'rb'))
     
     remove_file(ogg_file_path)
     remove_file(mp3_file_path)
