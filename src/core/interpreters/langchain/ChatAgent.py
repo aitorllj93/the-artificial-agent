@@ -34,6 +34,8 @@ logger = logging.getLogger(__name__)
 @dataclass
 class ChatAgent:
     agent_executor: AgentExecutor = None
+    memory: ConversationBufferMemory = None
+    personality_name: str = None
 
     def _get_docstore_agent(self):
         docstore = DocstoreExplorer(Wikipedia())
@@ -74,6 +76,7 @@ class ChatAgent:
         return lambda_func
 
     def __init__(self, *, conversation_chain: LLMChain = None, history_array, personality_name: str = None):
+        self.personality_name = personality_name
         date = datetime.today().strftime('%B %d, %Y at %I:%M %p')
 
         # set up a Wikipedia docstore agent
@@ -148,9 +151,9 @@ New input: {{input}}
 {{agent_scratchpad}}
 """
 
-        memory = ConversationBufferMemory(memory_key="chat_history")
+        self.memory = ConversationBufferMemory(memory_key="chat_history")
         for item in history_array:
-            memory.save_context(
+            self.memory.save_context(
                 {f"{ai_prefix}": item["prompt"]}, {f"{human_prefix}": item["response"]})
 
         llm = OpenAI(temperature=.5, openai_api_key=get_value(
@@ -174,7 +177,7 @@ New input: {{input}}
             tools=tools,
             verbose=True,
             max_iterations=5,
-            memory=memory,)
+            memory=self.memory,)
 
         # self.agent_executor = AgentExecutor.from_agent_and_tools(
         #     agent=agent,
@@ -182,26 +185,33 @@ New input: {{input}}
         #     max_iterations=5,
         #     verbose=True)
 
+    def express(self, input: str, lang: str = "en-US"):
         personality_llm = ChatOpenAI(temperature=0, openai_api_key=get_value(
             'providers.openai.apiKey'))
 
-        personality = get_personality(personality_name)
+        personality = get_personality(self.personality_name)
 
         personality_prompt = PromptTemplate(
             input_variables=["original_words"],
+            partial_variables={
+                "lang": lang
+            },
             template=personality["name"] +
             " is a " + personality["prompt"] +
             " Restate the following as " +
-            personality["name"] + " would: \n{original_words}\n",
+            personality["name"] +
+            " would in {lang}: \n{original_words}\n",
         )
 
         self.express_chain = LLMChain(
-            llm=personality_llm, prompt=personality_prompt, verbose=True, memory=memory)
+            llm=personality_llm, prompt=personality_prompt, verbose=True, memory=self.memory)
+
+        return self.express_chain.run(input)
 
     def run(self, input):
         try:
             result = self.agent_executor.run(input)
-            
+
             pattern = r'\(([a-z]{2}-[A-Z]{2})\)'
             # Search for the local pattern in the string
             match = re.search(pattern, result)
@@ -214,8 +224,14 @@ New input: {{input}}
                 # Remove the language code from the reply
                 result = re.sub(pattern, '', result)
 
-            reply = self.express_chain.run(result)
-            
+            logger.info('Got result from agent: ' + result)
+
+            # TODO: this method is not optimum, but it works for now
+            reply = self.express(result, language)
+            # reply = self.express_chain.run(result)
+
+            logger.info('Answer from express chain: ' + reply)
+
             reply = reply.replace('"', '')
 
         except ValueError as inst:
